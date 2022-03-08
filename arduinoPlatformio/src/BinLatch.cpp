@@ -12,12 +12,12 @@ BinLatch::BinLatch(byte servoPin,byte switchPin){
 }
 
 void BinLatch::lockLatch(){
-    _myservo.write(180);              // tell servo to go to position in variable 'pos'
+    _myservo.write(15);              // tell servo to go to position in variable 'pos'
     delay(15);                       // waits 15ms for the servo to reach the position
 }
 
 void BinLatch::releaseLatch(){
-    _myservo.write(45);              // tell servo to go to position in variable 'pos'
+    _myservo.write(120);              // tell servo to go to position in variable 'pos'
     delay(15);                       // waits 15ms for the servo to reach the position
 }
 

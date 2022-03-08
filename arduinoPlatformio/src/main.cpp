@@ -3,11 +3,11 @@
 #include <WiFiNINA.h>
 #include <ArduinoMqttClient.h>
 
-// const char SSID[] = "Cobotics_Lab_2.4GHz";
-// const char PASSWORD[] = "cobotics001";
-const char SSID[] = "Whitesky-712";
-const char PASSWORD[] = "krt3dyn5";
-const char mqttBroker[] = "10.135.152.91";
+const char SSID[] = "Cobotics_Lab_2.4GHz";
+const char PASSWORD[] = "cobotics001";
+// const char SSID[] = "Whitesky-712";
+// const char PASSWORD[] = "krt3dyn5";
+const char mqttBroker[] = "192.168.0.3";
 const int mqttPort = 1883;
 int keyIndex = 0;
 int status = WL_IDLE_STATUS;
@@ -15,13 +15,15 @@ int status = WL_IDLE_STATUS;
 
 WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
-BinLatch Bin_1(14,12);
+// BinLatch Bin_1(14,15);
+// BinLatch Bin_2(18,19);
+// BinLatch Bin_3(16,17);
+BinLatch Bin_4(14,15);
 boolean firstLoop = 1;
 boolean status_1 = 1;
 
-const char topic_1[]  = "/bin_rack/bin_1/status";
-const char topic_1_1[]  = "/bin_rack/bin_1/command";
-const char topic_2[]  = "/bin_rack/bin_2";
+const char topic_1[]  = "/bin_rack/Bin_4/status";
+const char topic_1_1[]  = "/bin_rack/Bin_4/command";
 
 void onMqttMessage(int messageSize) {
 
@@ -31,7 +33,7 @@ void onMqttMessage(int messageSize) {
       char letter = char(mqttClient.read());
       _msg += letter;}
       if (_msg == "RELEASE"){
-        Bin_1.releaseLatch();
+        Bin_4.releaseLatch();
       }
   }
 }
@@ -59,7 +61,6 @@ void _connectMqtt(){
   mqttClient.onMessage(onMqttMessage);
   mqttClient.subscribe(topic_1);
   mqttClient.subscribe(topic_1_1);
-  mqttClient.subscribe(topic_2);
 }
 
 void setup() {
@@ -67,27 +68,28 @@ void setup() {
   _connectWiFi();
   delay(2000);
   _connectMqtt();
-
 }
 
 void loop() {
 
   mqttClient.poll();
-
-  if (Bin_1.getBinStatus() != status_1 || firstLoop){ 
-    status_1 = Bin_1.getBinStatus();
+  // Serial.println(Bin_4.getBinStatus());
+  // delay(200);
+  
+  if (Bin_4.getBinStatus() != status_1 || firstLoop){ 
+    status_1 = Bin_4.getBinStatus();
     firstLoop = 0;
     if (!status_1){
       mqttClient.beginMessage(topic_1);
       mqttClient.print(status_1);
       mqttClient.endMessage();
-      Bin_1.releaseLatch();
+      // Bin_4.releaseLatch();
       }
       else if (status_1){
       mqttClient.beginMessage(topic_1);
       mqttClient.print(status_1);
       mqttClient.endMessage();
-      Bin_1.lockLatch();
+      Bin_4.lockLatch();
       }
   }
 } 
